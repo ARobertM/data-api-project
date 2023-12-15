@@ -1,0 +1,89 @@
+const pibUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/v2/json/sdg_08_10?na_item=B1GQ&unit=CLV10_EUR_HAB&time=2008&time=2022&geo=BE';
+const sperantaViataUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/v2/json/demo_mlexpec?sex=T&age=Y1&time=2008&time=2022&geo=BE,BG,CZ,DK,DE,EE,IE,EL,ES,FR,HR,IT,CY,LV,LT,LU,HU,MT,NL,AT,PL,PT,RO,SI,SK,FI,SE';
+const populatieUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/v2/json/demo_pjan?sex=T&age=TOTAL&time=2008&time=2022&geo=BE,BG,CZ,DK,DE,EE,IE,EL,ES,FR,HR,IT,CY,LV,LT,LU,HU,MT,NL,AT,PL,PT,RO,SI,SK,FI,SE';
+
+// Preluare PIB
+fetch(pibUrl)
+  .then(response => response.json())
+  .then(data => {
+    // Procesare date PIB
+    console.log('PIB:', data);
+    // Aici poți face operațiile de procesare și manipulare a datelor
+  })
+  .catch(error => {
+    console.error('Eroare PIB:', error);
+  });
+
+// Preluare speranța de viață
+fetch(sperantaViataUrl)
+  .then(response => response.json())
+  .then(data => {
+    // Procesare date speranță de viață
+    console.log('Speranță de viață:', data);
+    // Aici poți face operațiile de procesare și manipulare a datelor
+  })
+  .catch(error => {
+    console.error('Eroare speranță de viață:', error);
+  });
+
+// Preluare populație
+fetch(populatieUrl)
+  .then(response => response.json())
+  .then(data => {
+    // Procesare date populație
+    console.log('Populație:', data);
+    // Aici poți face operațiile de procesare și manipulare a datelor
+  })
+  .catch(error => {
+    console.error('Eroare populație:', error);
+  });
+
+
+
+
+  const apiUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/';
+const datasets = ['sdg_08_10?na_item=B1GQ&unit=CLV10_EUR_HAB', 'demo_mlexpec?sex=T&age=Y1', 'demo_pjan?sex=T&age=TOTAL'];
+const countries = ['BE', 'BG', 'CZ', 'DK', 'DE', 'EE', 'IE', 'EL', 'ES', 'FR', 'HR', 'IT', 'CY', 'LV', 'LT', 'LU', 'HU', 'MT', 'NL', 'AT', 'PL', 'PT', 'RO', 'SI', 'SK', 'FI', 'SE'];
+
+async function fetchData() {
+  const results = [];
+
+  for (const dataset of datasets) {
+    for (const country of countries) {
+      try {
+        const response = await fetch(`${apiUrl}${dataset}&geo=${country}`);
+        const data = await response.json();
+
+        // Verificăm formatul datelor primite și le adăugăm în tabel
+        if (Array.isArray(data)) {
+          updateSecondTableWithData(data);
+        } else {
+          console.error('Datele primite nu sunt sub formă de array:', data);
+        }
+      } catch (error) {
+        console.error('Eroare în timpul preluării datelor:', error);
+      }
+    }
+  }
+}
+
+
+function updateSecondTableWithData(data) {
+  const table = document.getElementById('secondTable').querySelector('tbody');
+
+  data.forEach(item => {
+    const row = table.insertRow();
+    const taraCell = row.insertCell(0);
+    const anCell = row.insertCell(1);
+    const indicatorCell = row.insertCell(2);
+    const valoareCell = row.insertCell(3);
+
+    taraCell.textContent = item.tara;
+    anCell.textContent = item.an;
+    indicatorCell.textContent = item.indicator;
+    valoareCell.textContent = item.valoare;
+  });
+}
+
+// Apelarea funcției pentru a prelua datele și a le adăuga în tabelul cu ID-ul 'secondTable'
+fetchData();
